@@ -1,4 +1,2 @@
 call Includes/Fast
 call Includes/5vs5
-
-dr representation:SetupPoses:place

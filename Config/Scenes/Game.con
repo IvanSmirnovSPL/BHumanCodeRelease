@@ -2,4 +2,3 @@ call Includes/Normal
 call Includes/5vs5
 
 dr debugDrawing3d:representation:RobotPose
-dr representation:SetupPoses:place

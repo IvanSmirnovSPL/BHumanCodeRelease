@@ -1,9 +1,8 @@
 # field views
 vf worldState
-vfd worldState fieldPolygons
 vfd worldState fieldLines
 vfd worldState goalFrame
+vfd worldState fieldPolygons
 vfd worldState representation:RobotPose
 vfd worldState representation:RobotPose:fieldOfView
-vfd worldState representation:TeammatesBallModel
 vfd worldState representation:FieldBall:global
