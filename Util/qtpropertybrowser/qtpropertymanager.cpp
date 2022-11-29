@@ -39,18 +39,18 @@
 
 #include "qtpropertymanager.h"
 #include "qtpropertybrowserutils_p.h"
-#include <QDateTime>
-#include <QLocale>
-#include <QMap>
-#include <QTimer>
-#include <QIcon>
-#include <QMetaEnum>
-#include <QFontDatabase>
-#include <QStyleOption>
-#include <QStyle>
-#include <QApplication>
-#include <QPainter>
-#include <QLabel>
+#include <QtCore/QDateTime>
+#include <QtCore/QLocale>
+#include <QtCore/QMap>
+#include <QtCore/QTimer>
+#include <QtGui/QIcon>
+#include <QtCore/QMetaEnum>
+#include <QtGui/QFontDatabase>
+#include <QtWidgets/QStyleOption>
+#include <QtWidgets/QStyle>
+#include <QtWidgets/QApplication>
+#include <QtGui/QPainter>
+#include <QtWidgets/QLabel>
 
 #include <limits.h>
 #include <float.h>
@@ -442,7 +442,7 @@ void QtMetaEnumProvider::initLocale()
 
         if (!countries.isEmpty() && !m_languageToIndex.contains(language)) {
             countries = sortCountries(countries);
-            int langIdx = static_cast<int>(m_languageEnumNames.count());
+            int langIdx = m_languageEnumNames.count();
             m_indexToLanguage[langIdx] = language;
             m_languageToIndex[language] = langIdx;
             QStringList countryNames;
@@ -1197,11 +1197,11 @@ public:
 
     struct Data
     {
-        Data() : regExp(".*")
+        Data() : regExp(QString(QLatin1Char('*')),  Qt::CaseSensitive, QRegExp::Wildcard)
         {
         }
         QString val;
-        QRegularExpression regExp;
+        QRegExp regExp;
     };
 
     typedef QMap<const QtProperty *, Data> PropertyValueMap;
@@ -1242,7 +1242,7 @@ public:
 */
 
 /*!
-    \fn void QtStringPropertyManager::regExpChanged(QtProperty *property, const QRegularExpression &regExp)
+    \fn void QtStringPropertyManager::regExpChanged(QtProperty *property, const QRegExp &regExp)
 
     This signal is emitted whenever a property created by this manager
     changes its currenlty set regular expression, passing a pointer to
@@ -1289,9 +1289,9 @@ QString QtStringPropertyManager::value(const QtProperty *property) const
 
     \sa setRegExp()
 */
-QRegularExpression QtStringPropertyManager::regExp(const QtProperty *property) const
+QRegExp QtStringPropertyManager::regExp(const QtProperty *property) const
 {
-    return getData<QRegularExpression>(d_ptr->m_values, &QtStringPropertyManagerPrivate::Data::regExp, property, QRegularExpression());
+    return getData<QRegExp>(d_ptr->m_values, &QtStringPropertyManagerPrivate::Data::regExp, property, QRegExp());
 }
 
 /*!
@@ -1326,7 +1326,7 @@ void QtStringPropertyManager::setValue(QtProperty *property, const QString &val)
     if (data.val == val)
         return;
 
-    if (data.regExp.isValid() && !data.regExp.globalMatch(val).hasNext())
+    if (data.regExp.isValid() && !data.regExp.exactMatch(val))
         return;
 
     data.val = val;
@@ -1342,7 +1342,7 @@ void QtStringPropertyManager::setValue(QtProperty *property, const QString &val)
 
     \sa regExp(), setValue(), regExpChanged()
 */
-void QtStringPropertyManager::setRegExp(QtProperty *property, const QRegularExpression &regExp)
+void QtStringPropertyManager::setRegExp(QtProperty *property, const QRegExp &regExp)
 {
     const QtStringPropertyManagerPrivate::PropertyValueMap::iterator it = d_ptr->m_values.find(property);
     if (it == d_ptr->m_values.end())
@@ -5529,6 +5529,8 @@ void QtSizePolicyPropertyManager::uninitializeProperty(QtProperty *property)
 // enumeration manager to re-set its strings and index values
 // for each property.
 
+Q_GLOBAL_STATIC(QFontDatabase, fontDatabase)
+
 class QtFontPropertyManagerPrivate
 {
     QtFontPropertyManager *q_ptr;
@@ -5671,7 +5673,7 @@ void QtFontPropertyManagerPrivate::slotFontDatabaseDelayedChange()
     typedef QMap<const QtProperty *, QtProperty *> PropertyPropertyMap;
     // rescan available font names
     const QStringList oldFamilies = m_familyNames;
-    m_familyNames = QFontDatabase::families();
+    m_familyNames = fontDatabase()->families();
 
     // Adapt all existing properties
     if (!m_propertyToFamily.empty()) {
@@ -5679,7 +5681,7 @@ void QtFontPropertyManagerPrivate::slotFontDatabaseDelayedChange()
         for (PropertyPropertyMap::const_iterator it = m_propertyToFamily.constBegin(); it != cend; ++it) {
             QtProperty *familyProp = it.value();
             const int oldIdx = m_enumPropertyManager->value(familyProp);
-            int newIdx = static_cast<int>(m_familyNames.indexOf(oldFamilies.at(oldIdx)));
+            int newIdx = m_familyNames.indexOf(oldFamilies.at(oldIdx));
             if (newIdx < 0)
                 newIdx = 0;
             m_enumPropertyManager->setEnumNames(familyProp, m_familyNames);
@@ -5856,12 +5858,12 @@ void QtFontPropertyManager::setValue(QtProperty *property, const QFont &val)
         return;
 
     const QFont oldVal = it.value();
-    if (oldVal == val && oldVal.isCopyOf(val))
+    if (oldVal == val && oldVal.resolve() == val.resolve())
         return;
 
     it.value() = val;
 
-    int idx = static_cast<int>(d_ptr->m_familyNames.indexOf(val.family()));
+    int idx = d_ptr->m_familyNames.indexOf(val.family());
     if (idx == -1)
         idx = 0;
     bool settingValue = d_ptr->m_settingValue;
@@ -5890,9 +5892,9 @@ void QtFontPropertyManager::initializeProperty(QtProperty *property)
     QtProperty *familyProp = d_ptr->m_enumPropertyManager->addProperty();
     familyProp->setPropertyName(tr("Family"));
     if (d_ptr->m_familyNames.empty())
-        d_ptr->m_familyNames = QFontDatabase::families();
+        d_ptr->m_familyNames = fontDatabase()->families();
     d_ptr->m_enumPropertyManager->setEnumNames(familyProp, d_ptr->m_familyNames);
-    int idx = static_cast<int>(d_ptr->m_familyNames.indexOf(val.family()));
+    int idx = d_ptr->m_familyNames.indexOf(val.family());
     if (idx == -1)
         idx = 0;
     d_ptr->m_enumPropertyManager->setValue(familyProp, idx);

@@ -40,8 +40,8 @@
 #ifndef QTPROPERTYBROWSER_H
 #define QTPROPERTYBROWSER_H
 
-#include <QWidget>
-#include <QSet>
+#include <QtWidgets/QWidget>
+#include <QtCore/QSet>
 
 QT_BEGIN_NAMESPACE
 

@@ -41,7 +41,6 @@
 #define QTPROPERTYMANAGER_H
 
 #include "qtpropertybrowser.h"
-#include <QRegularExpression>
 
 QT_BEGIN_NAMESPACE
 
@@ -171,14 +170,14 @@ public:
     ~QtStringPropertyManager();
 
     QString value(const QtProperty *property) const;
-    QRegularExpression regExp(const QtProperty *property) const;
+    QRegExp regExp(const QtProperty *property) const;
 
 public Q_SLOTS:
     void setValue(QtProperty *property, const QString &val);
-    void setRegExp(QtProperty *property, const QRegularExpression &regExp);
+    void setRegExp(QtProperty *property, const QRegExp &regExp);
 Q_SIGNALS:
     void valueChanged(QtProperty *property, const QString &val);
-    void regExpChanged(QtProperty *property, const QRegularExpression &regExp);
+    void regExpChanged(QtProperty *property, const QRegExp &regExp);
 protected:
     QString valueText(const QtProperty *property) const;
     virtual void initializeProperty(QtProperty *property);

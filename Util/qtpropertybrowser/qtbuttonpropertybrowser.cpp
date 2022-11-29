@@ -38,13 +38,13 @@
 ****************************************************************************/
 
 #include "qtbuttonpropertybrowser.h"
-#include <QSet>
-#include <QGridLayout>
-#include <QLabel>
-#include <QTimer>
-#include <QMap>
-#include <QToolButton>
-#include <QStyle>
+#include <QtCore/QSet>
+#include <QtWidgets/QGridLayout>
+#include <QtWidgets/QLabel>
+#include <QtCore/QTimer>
+#include <QtCore/QMap>
+#include <QtWidgets/QToolButton>
+#include <QtWidgets/QStyle>
 
 QT_BEGIN_NAMESPACE
 

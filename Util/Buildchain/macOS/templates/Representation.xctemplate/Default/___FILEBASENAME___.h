@@ -8,7 +8,7 @@
 
 #pragma once
 
-#include "Streaming/AutoStreamable.h"
+#include "Tools/Streams/AutoStreamable.h"
 
 STREAMABLE(___FILEBASENAME___,
 {,
