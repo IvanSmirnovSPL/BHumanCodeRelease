@@ -1,5 +1,6 @@
 @echo off
 set SHELLOPTS=igncr
 pushd "%~dp0"
-bash ./installHooks %*
+bash ../Linux/createModule
+generate.cmd
 popd

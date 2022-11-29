@@ -1,6 +1,5 @@
 #!/bin/bash
-# Downloads all log files from the robot to the directory 
-# Config/Logs.
+#downloads all log files from the robot
 
 basePath=$(cd "$(dirname "$(which "$0")")" && pwd)
 
